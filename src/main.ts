@@ -1,24 +1,46 @@
-import './style.css'
-import typescriptLogo from './typescript.svg'
-import viteLogo from '/vite.svg'
-import { setupCounter } from './counter.ts'
+import { fetchOnePieceList, fruits } from "./fruits";
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://www.typescriptlang.org/" target="_blank">
-      <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
-    </a>
-    <h1>Vite + TypeScript</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite and TypeScript logos to learn more
-    </p>
-  </div>
-`
+async function main() {
+  const FruitList: fruits[] = await fetchOnePieceList();
+  console.log("Liste des OnePiece:", FruitList);
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+  const app = document.getElementById("app");
+  if (app) {
+    app.innerHTML = "<h1>Liste des OnePiece</h1>";
+
+    const fruitContainer = document.createElement("div");
+    fruitContainer.style.display = "grid";
+    fruitContainer.style.gridTemplateColumns = "repeat(4, 1fr)";
+    fruitContainer.style.gap = "10px";
+    fruitContainer.style.justifyItems = "center";
+    fruitContainer.style.padding = "20px";
+
+    FruitList.forEach((fruit) => {
+      const fruitElement = document.createElement("div");
+      fruitElement.className = "fruit-container";
+
+      const fruitName = document.createElement("h2");
+      fruitName.textContent = fruit.name;
+
+      const fruitImage = document.createElement("img");
+      fruitImage.src = fruit.filename;
+      fruitImage.alt = fruit.name;
+      fruitImage.style.width = "150px";
+      fruitImage.style.height = "150px";
+
+      const fruitDescription = document.createElement("p");
+      fruitDescription.textContent = fruit.description;
+
+      fruitElement.appendChild(fruitName);
+      fruitElement.appendChild(fruitImage);
+      fruitElement.appendChild(fruitDescription);
+      fruitContainer.appendChild(fruitElement);
+    });
+
+    app.appendChild(fruitContainer);
+  } else {
+    console.error('Element with id "app" not found');
+  }
+}
+
+document.addEventListener("DOMContentLoaded", main);
